@@ -779,4 +779,83 @@ if (birthdayToday) {
   bdayDiv.appendChild(h2);
   bdayDiv.appendChild(img);
 }
+/* Ovocný automat */
+const slotDialog = document.getElementById("slotDialog");
+const slotButton = document.getElementById("slotButton");
+const slotSpin = document.getElementById("slotSpin");
+const slotStatus = document.getElementById("slotStatus");
+const slotReels = [...slotDialog.querySelectorAll(".slot-reel")];
+const slotFruits = ["🍒", "🍋", "🍉", "🍇", "🍊", "🍓"];
 
+let slotTimers = [];
+let slotRunning = false;
+
+function randomFruit() {
+  return slotFruits[Math.floor(Math.random() * slotFruits.length)];
+}
+
+function stopSlotTimers() {
+  slotTimers.forEach(({ id, interval }) => {
+    if (interval) clearInterval(id);
+    else clearTimeout(id);
+  });
+
+  slotTimers = [];
+  slotRunning = false;
+  slotSpin.disabled = false;
+  slotSpin.textContent = "🎰 TOČIT";
+  slotReels.forEach(reel => reel.classList.remove("spinning"));
+}
+
+slotButton.addEventListener("click", () => slotDialog.showModal());
+
+document.getElementById("slotClose").addEventListener("click", () => {
+  slotDialog.close();
+});
+
+slotDialog.addEventListener("close", stopSlotTimers);
+
+slotSpin.addEventListener("click", () => {
+  if (slotRunning) return;
+
+  slotRunning = true;
+  slotSpin.disabled = true;
+  slotSpin.textContent = "TOČÍ SE…";
+  slotStatus.textContent = "Válce se točí…";
+  slotDialog.classList.remove("slot-win");
+
+  const result = slotReels.map(randomFruit);
+
+  slotReels.forEach((reel, index) => {
+    reel.classList.add("spinning");
+
+    const intervalId = setInterval(() => {
+      reel.textContent = randomFruit();
+    }, 75);
+
+    slotTimers.push({ id: intervalId, interval: true });
+
+    const timeoutId = setTimeout(() => {
+      clearInterval(intervalId);
+      reel.textContent = result[index];
+      reel.classList.remove("spinning");
+
+      if (index === slotReels.length - 1) {
+        const unique = new Set(result).size;
+
+        slotStatus.textContent =
+          unique === 1 ? "🎉 JACKPOT! Tři stejné!" :
+          unique === 2 ? "✨ Dvě stejné! Zkus ještě jednou." :
+                         "🍀 Tentokrát nic. Zkus to znovu!";
+
+        slotDialog.classList.toggle("slot-win", unique === 1);
+        slotRunning = false;
+        slotSpin.disabled = false;
+        slotSpin.textContent = "🎰 TOČIT ZNOVU";
+        slotTimers = [];
+      }
+    }, 1400 + index * 550);
+
+    slotTimers.push({ id: timeoutId, interval: false });
+  });
+});
