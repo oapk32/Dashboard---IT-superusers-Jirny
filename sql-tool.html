@@ -181,7 +181,7 @@
         ? unwrapped.replace(/;\s*$/, '')
         : unwrapped;
       const converted = transformTables(body, direction);
-      const dates = direction === 'toLext' && document.getElementById('fixDates').checked
+      const dates = direction === 'toLext'
         ? fixTrndteDates(converted.text)
         : { text: converted.text, changed: 0 };
       output.value = direction === 'toLext'
