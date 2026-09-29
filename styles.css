@@ -561,7 +561,117 @@
 	  background-color:black;
 	  cursor: url("ruka_hover.png"), pointer;
 }
+#slotButton {
+  position: fixed;
+  top: 20px;
+  left: 165px;
+  z-index: 9999;
+  padding: 10px 18px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #ffd100;
+  font: bold 1.3rem system-ui, sans-serif;
+  cursor: pointer;
+  box-shadow: 0 0 10px #000;
+}
 
+#slotButton:hover {
+  transform: scale(1.05);
+  border-color: white;
+}
+
+#slotDialog {
+  width: min(370px, calc(100vw - 48px));
+  padding: 28px 24px;
+  border: 3px solid #ffd100;
+  border-radius: 18px;
+  background: linear-gradient(150deg, #3b164d, #161225);
+  color: white;
+  text-align: center;
+  box-shadow: 0 20px 70px #000;
+}
+
+#slotDialog::backdrop {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+#slotDialog h2 {
+  color: #ffe06b;
+  margin-top: 0;
+}
+
+#slotClose {
+  position: absolute;
+  top: 5px;
+  right: 12px;
+  border: 0;
+  background: transparent;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.slot-reels {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px 0;
+}
+
+.slot-reel {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 100px;
+  border: 3px solid #e5af28;
+  border-radius: 10px;
+  background: linear-gradient(#fff, #ece1cc);
+  font-size: 3.4rem;
+  box-shadow: 0 5px 0 #8e5521;
+}
+
+.slot-reel.spinning {
+  animation: slot-rattle 0.13s infinite alternate;
+}
+
+@keyframes slot-rattle {
+  from { transform: translateY(-4px); filter: blur(1.5px); }
+  to   { transform: translateY(4px); filter: blur(0.5px); }
+}
+
+#slotStatus {
+  min-height: 1.5em;
+  font-weight: bold;
+}
+
+#slotSpin {
+  padding: 12px 26px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(#ffe778, #f6ad27);
+  color: #30200e;
+  font: 900 1.1rem system-ui, sans-serif;
+  cursor: pointer;
+}
+
+#slotSpin:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+#slotDialog.slot-win .slot-reel {
+  box-shadow: 0 0 20px #ffcf35;
+}
+
+@media (max-width: 680px) {
+  #slotButton { top: 72px; left: 20px; }
+  .slot-reel { width: 72px; height: 84px; font-size: 2.8rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot-reel.spinning { animation: none; }
+}
     /* WOW ROLL BUTTON */
     #rollButton {
       position: fixed;
