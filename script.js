@@ -262,8 +262,9 @@ rainbowBackground();
 let quickscopePlayed = false;
 
 document.getElementById("rollButton").addEventListener("click", () => {
-    const rollResult = Math.floor(Math.random() * 100) + 1;
-
+    //const rollResult = Math.floor(Math.random() * 100) + 1;
+    const rollResult = 100;
+	
     const resultDiv = document.getElementById("rollResult");
     const diceButton = document.getElementById("rollButton");
     const quickscope = document.getElementById("quickscopeGif");
