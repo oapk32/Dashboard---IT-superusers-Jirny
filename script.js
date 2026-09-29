@@ -781,32 +781,54 @@ if (birthdayToday) {
   bdayDiv.appendChild(h2);
   bdayDiv.appendChild(img);
 }
-/* Ovocný automat */
+/* Ovocný automat – svisle rolující pásy */
 const slotDialog = document.getElementById("slotDialog");
 const slotButton = document.getElementById("slotButton");
 const slotSpin = document.getElementById("slotSpin");
 const slotStatus = document.getElementById("slotStatus");
 const slotReels = [...slotDialog.querySelectorAll(".slot-reel")];
-const slotFruits = ["🍒", "🍋", "🍉", "🍇", "🍊", "🍓"];
 
+const fruits = ["🍒", "🍋", "🍉", "🍇", "🍊", "🍓"];
+const symbolHeight = 60;
 let slotTimers = [];
 let slotRunning = false;
 
+/* Každý sloupec dostane dlouhý pás opakujícího se ovoce. */
+const tracks = slotReels.map((reel, reelIndex) => {
+  const track = document.createElement("span");
+  track.className = "slot-track";
+
+  for (let repeat = 0; repeat < 5; repeat++) {
+    fruits.forEach(fruit => {
+      const symbol = document.createElement("span");
+      symbol.className = "slot-symbol";
+      symbol.textContent = fruit;
+      track.appendChild(symbol);
+    });
+  }
+
+  reel.replaceChildren(track);
+  track.style.transform =
+    `translateY(-${symbolHeight * (fruits.length + reelIndex)}px)`;
+
+  return track;
+});
+
 function randomFruit() {
-  return slotFruits[Math.floor(Math.random() * slotFruits.length)];
+  return fruits[Math.floor(Math.random() * fruits.length)];
 }
 
-function stopSlotTimers() {
-  slotTimers.forEach(({ id, interval }) => {
-    if (interval) clearInterval(id);
-    else clearTimeout(id);
-  });
+/* Zjistí aktuální polohu pásu a zastaví jeho nekonečné rolování. */
+function freezeTrack(track) {
+  const transform = getComputedStyle(track).transform;
+  const y = transform === "none"
+    ? -symbolHeight * fruits.length
+    : new DOMMatrixReadOnly(transform).m42;
 
-  slotTimers = [];
-  slotRunning = false;
-  slotSpin.disabled = false;
-  slotSpin.textContent = "🎰 TOČIT";
-  slotReels.forEach(reel => reel.classList.remove("spinning"));
+  track.style.animation = "none";
+  track.style.transition = "none";
+  track.style.transform = `translateY(${y}px)`;
+  return y;
 }
 
 slotButton.addEventListener("click", () => slotDialog.showModal());
@@ -815,7 +837,14 @@ document.getElementById("slotClose").addEventListener("click", () => {
   slotDialog.close();
 });
 
-slotDialog.addEventListener("close", stopSlotTimers);
+slotDialog.addEventListener("close", () => {
+  slotTimers.forEach(clearTimeout);
+  slotTimers = [];
+  tracks.forEach(freezeTrack);
+  slotRunning = false;
+  slotSpin.disabled = false;
+  slotSpin.textContent = "🎰 TOČIT";
+});
 
 slotSpin.addEventListener("click", () => {
   if (slotRunning) return;
@@ -826,38 +855,60 @@ slotSpin.addEventListener("click", () => {
   slotStatus.textContent = "Válce se točí…";
   slotDialog.classList.remove("slot-win");
 
-  const result = slotReels.map(randomFruit);
+  const result = tracks.map(randomFruit);
 
-  slotReels.forEach((reel, index) => {
-    reel.classList.add("spinning");
+  tracks.forEach((track, index) => {
+    /* Rozběhne svislé rolování. */
+    track.style.animation = "none";
+    track.style.transition = "none";
+    track.style.transform =
+      `translateY(-${symbolHeight * fruits.length}px)`;
 
-    const intervalId = setInterval(() => {
-      reel.textContent = randomFruit();
-    }, 75);
+    void track.offsetHeight;
 
-    slotTimers.push({ id: intervalId, interval: true });
+    track.style.animation =
+      `fruit-scroll ${0.42 + index * 0.07}s linear infinite`;
 
-    const timeoutId = setTimeout(() => {
-      clearInterval(intervalId);
-      reel.textContent = result[index];
-      reel.classList.remove("spinning");
+    /* Sloupce se zastavují postupně zleva doprava. */
+    const timer = setTimeout(() => {
+      const currentY = freezeTrack(track);
+      const currentPosition = Math.ceil(-currentY / symbolHeight);
+      const fruitIndex = fruits.indexOf(result[index]);
 
-      if (index === slotReels.length - 1) {
-        const unique = new Set(result).size;
+      const stepsToFruit =
+        (fruitIndex - currentPosition % fruits.length + fruits.length)
+        % fruits.length;
 
-        slotStatus.textContent =
-          unique === 1 ? "🎉 JACKPOT! Tři stejné!" :
-          unique === 2 ? "✨ Dvě stejné! Zkus ještě jednou." :
-                         "🍀 Tentokrát nic. Zkus to znovu!";
+      const finalPosition =
+        currentPosition + stepsToFruit + fruits.length;
 
-        slotDialog.classList.toggle("slot-win", unique === 1);
-        slotRunning = false;
-        slotSpin.disabled = false;
-        slotSpin.textContent = "🎰 TOČIT ZNOVU";
-        slotTimers = [];
+      void track.offsetHeight;
+
+      track.style.transition =
+        "transform 0.9s cubic-bezier(0.12, 0.65, 0.15, 1)";
+      track.style.transform =
+        `translateY(-${finalPosition * symbolHeight}px)`;
+
+      if (index === tracks.length - 1) {
+        const finishTimer = setTimeout(() => {
+          const unique = new Set(result).size;
+
+          slotStatus.textContent =
+            unique === 1 ? "🎉 JACKPOT! Tři stejné!" :
+            unique === 2 ? "✨ Dvě stejné! Zkus ještě jednou." :
+                           "🍀 Tentokrát nic. Zkus to znovu!";
+
+          slotDialog.classList.toggle("slot-win", unique === 1);
+          slotRunning = false;
+          slotSpin.disabled = false;
+          slotSpin.textContent = "🎰 TOČIT ZNOVU";
+          slotTimers = [];
+        }, 950);
+
+        slotTimers.push(finishTimer);
       }
-    }, 1400 + index * 550);
+    }, 1200 + index * 600);
 
-    slotTimers.push({ id: timeoutId, interval: false });
+    slotTimers.push(timer);
   });
 });
