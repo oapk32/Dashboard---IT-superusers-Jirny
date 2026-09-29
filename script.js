@@ -411,7 +411,8 @@ const CHECKLIST_ITEMS = [
   "DHL Link",
   "CZJIRP2",
   "CZJIRP3",
-  "ZABBIX"
+  "ZABBIX",
+ "Monster Energy"
 ];
 
 const STORAGE_KEY_STATE = "shiftChecklistState";
