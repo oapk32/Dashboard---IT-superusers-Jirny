@@ -1,0 +1,793 @@
+    body {
+      font-family: system-ui, sans-serif;
+      background-image: url("reactor.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      backdrop-filter: blur(2px);
+	  transition: background-image 0s, opacity 0.6s ease;
+	  cursor: url("ruka.png"), auto;
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 8px #000;
+    }
+	
+	#date_week {
+  margin-top: 0px;
+  font-size: 1.5rem;
+  text-shadow: 0 0 6px #000;
+}
+
+    #countdown {
+      font-size: 7rem;
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 8px #000;
+    }
+
+    #fridayAlert {
+      font-size: 4rem;
+      font-weight: bold;
+      color: red;
+      text-shadow: 0 0 10px black;
+      margin-top: 20px;
+      display: none;
+    }
+
+    #currentWorkers {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      text-shadow: 0 0 6px #000;
+    }
+
+    #shiftGif {
+      display: none;
+      width: 300px;
+      margin-top: 20px;
+    }
+
+    #castbarContainer {
+      width: 400px;
+      height: 30px;
+      border: 2px solid #fff;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.4);
+      margin-top: 20px;
+      display: none;
+      overflow: hidden;
+      box-shadow: 0 0 10px #000;
+    }
+	
+	
+    #castbarFill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ffcc00, #ff8800);
+      transition: width 1s linear;
+    }
+
+    #castbarText {
+      position: relative;
+      top: -28px;
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      text-shadow: 0 0 5px #000;
+    }
+	#hearthstonegif {
+      position: fixed;
+      bottom: 20%;
+      left: 46%;
+      width: 180px;
+      z-index: 999;
+      filter: drop-shadow(0 0 10px red);
+    }
+    /* BOOST ALERT */
+    #boostAlert {
+      font-size: 3rem;
+      font-weight: bold;
+      color: yellow;
+      text-shadow: 0 0 10px black;
+      margin-top: 20px;
+      display: none;
+      animation: boostBlink 0.6s infinite;
+    }
+
+    @keyframes boostBlink {
+      0% { opacity: 1; }
+      50% { opacity: 0.2; }
+      100% { opacity: 1; }
+    }
+
+    #boostGif {
+      position: fixed;
+      bottom: 70px;
+      right: 650px;
+      width: 800px;
+	  height: 800px;
+      display: none;
+      z-index: 999;
+      filter: drop-shadow(0 0 10px red);
+    }
+	#ticketsAlert {
+	position: fixed;
+	top: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 48px;
+	font-weight: bold;
+	color: yellow;
+	text-shadow: 3px 3px 8px black;
+	display: none;
+	z-index: 9999;
+}
+
+#ticketsGif {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  display: none;
+  z-index: 9999;
+}
+/*z-index:9999 je big*/
+#weather {
+  position: fixed;
+  right: 12%;
+  bottom:5%;
+  z-index: 9999; 
+}
+	#pd-runner {
+    position: fixed;
+    top: 40%;
+    left: -200px;
+    width: 200px;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s linear;
+}
+
+.pd-animate {
+    animation: pd-move 8s linear forwards;
+    opacity: 1;
+}
+
+@keyframes pd-move {
+    0% { left: -200px; }
+    100% { left: 100vw; }
+}
+
+    /* FIRE GIF – ranní směna */
+    #fireGif {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 30vh;
+      object-fit: cover;
+      display: none;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* LUNCH GIF */
+    #lunchGif {
+      position: fixed;
+      bottom: 50;
+      left: 0;
+      width: 30vw;
+      height: 30vh;
+      object-fit: cover;
+      display: none;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* LUNCH TEXT */
+    #lunchText {
+      position: fixed;
+      bottom: 66vh;
+      left: 2vw;
+      font-size: 3rem;
+      font-weight: bold;
+      color: yellow;
+      text-shadow: 0 0 10px black;
+      display: none;
+      animation: lunchBlink 0.6s infinite;
+      z-index: 10;
+    }
+
+    @keyframes lunchBlink {
+      0% { opacity: 1; }
+      50% { opacity: 0.2; }
+      100% { opacity: 1; }
+    }
+
+    /* BUTTON – JE TO V PRDELI */
+    #panicButton {
+      position: fixed;
+      bottom: 1%;
+      left: 20px;
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000;
+      transition: 0.2s;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    #panicButton:hover {
+      transform: scale(1.05);
+      border-color: rgba(255,255,255,0.7);
+	  cursor: url("ruka_hover.png"), pointer;
+    }
+	#dogButton {
+	position: fixed;
+	bottom: 20px;
+	left: 50%;
+	border: 2px solid rgba(255,255,255,0.4);
+	border-radius: 15px;
+	transform: translateX(-50%);
+	font-size: 40px;
+	background: transparent;
+	cursor: pointer;
+	transition: 0.2s;
+	z-index: 9999;
+}
+
+	#dogButton:hover {
+	transform: translateX(-50%) scale(1.2);
+	border-color: rgba(255,255,255,0.7);
+	cursor: url("ruka_hover.png"), pointer;
+}
+
+    /* BUTTON – už je mi dobře */
+    #panicButton2 {
+      position: fixed;
+      bottom: 20px;
+      left: 90%;
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000;
+      transition: 0.2s;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    #panicButton2:hover {
+      transform: scale(1.05);
+      border-color: rgba(255,255,255,0.7);
+	  cursor: url("ruka_hover.png"), pointer;
+    }
+
+    /* BUTTON – JÍDELNA */
+    #menuButton {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000;
+      transition: 0.2s;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    #menuButton:hover {
+      transform: scale(1.05);
+      border-color: rgba(255,255,255,0.7);
+	  cursor: url("ruka_hover.png"), pointer;
+    }
+
+    #menuButton:hover::after {
+	  content: "U žida💩";
+	  position: absolute;
+	  inset: 0;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  color: white;
+	  background-color:black;
+	  cursor: url("ruka_hover.png"), pointer;
+}
+
+.checklist {
+  background: rgba(0,0,0,0.4);
+  position: fixed;
+  top: 10%;
+  left: 1%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #fff;
+  max-width: 320px;
+  font-family: system-ui, sans-serif;
+}
+
+.checklist h3 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.checklist ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 12px;
+}
+
+.checklist li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.checklist input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+
+ #darkmodeButton {
+  position: fixed;
+  bottom: 100px;
+  left: 90%;
+  background: transparent;
+  color: white;
+  border: 2px solid rgba(255,255,255,0.4);
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 0 10px #000;
+  transition: 0.2s;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+#darkmodeButton:hover {
+  transform: scale(1.05);
+  border-color: rgba(255,255,255,0.7);
+  cursor: url("ruka_hover.png"), pointer;
+}
+.darkness {
+  filter: brightness(3%);
+  transition: filter 2s ease;
+}
+
+
+
+
+/* BUTTON – Směny */
+    #Směnybutton {
+      position: fixed;
+      top: 20px;
+      right: 320px;
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000;
+      transition: 0.2s;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    #Směnybutton:hover {
+      transform: scale(1.05);
+      border-color: rgba(255,255,255,0.7);
+	  cursor: url("ruka_hover.png"), pointer;
+    }
+
+    #Směnybutton:hover::after {
+	  position: absolute;
+	  inset: 0;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  color: white;
+	  background-color:black;
+	  cursor: url("ruka_hover.png"), pointer;
+}
+
+    #Dovolenkabutton	{
+      position: fixed;
+      top: 80px;
+      right: 320px;
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000;
+      transition: 0.2s;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    #Dovolenkabutton:hover {
+      transform: scale(1.05);
+      border-color: rgba(255,255,255,0.7);
+	  cursor: url("ruka_hover.png"), pointer;
+    }
+
+    #Dovolenkabutton:hover::after {
+	  position: absolute;
+	  inset: 0;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  color: white;
+	  background-color:black;
+	  cursor: url("ruka_hover.png"), pointer;
+}
+
+    #irc	{
+      position: fixed;
+      top: 80px;
+      right: 180px;
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000;
+      transition: 0.2s;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    #irc:hover {
+      transform: scale(1.05);
+      border-color: rgba(255,255,255,0.7);
+	  cursor: url("ruka_hover.png"), pointer;
+    }
+
+    #irc:hover::after {
+	  position: absolute;
+	  inset: 0;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  color: white;
+	  background-color:black;
+	  cursor: url("ruka_hover.png"), pointer;
+}
+
+    #Creditsbutton {
+      position: fixed;
+      top: 20px;
+      right: 475px;
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000;
+      transition: 0.2s;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    #Creditsbutton:hover {
+      transform: scale(1.05);
+      border-color: rgba(255,255,255,0.7);
+	  cursor: url("ruka_hover.png"), pointer;
+    }
+
+    #Creditsbutton:hover::after {
+	  position: absolute;
+	  inset: 0;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  color: white;
+	  background-color:black;
+	  cursor: url("ruka_hover.png"), pointer;
+}
+
+#Contentbutton {
+      position: fixed;
+      top: 20px;
+      left: 475px;
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000;
+      transition: 0.2s;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    #Contentbutton:hover {
+      transform: scale(1.05);
+      border-color: rgba(255,255,255,0.7);
+	  cursor: url("ruka_hover.png"), pointer;
+    }
+
+    #Contentbutton:hover::after {
+	  position: absolute;
+	  inset: 0;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  color: white;
+	  background-color:black;
+	  cursor: url("ruka_hover.png"), pointer;
+}
+
+    /* WOW ROLL BUTTON */
+    #rollButton {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.4);
+      color: #ffd100;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 10px 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000;
+      transition: 0.2s;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+      text-shadow: 1px 1px 2px black;
+    }
+
+    #rollButton:hover {
+      transform: scale(1.05);
+      border-color: rgba(255,255,255,0.7);
+	  cursor: url("ruka_hover.png"), pointer;
+    }
+
+    #rollResult {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      font-size: 3rem;
+      font-weight: bold;
+      color: #ffd100;
+      text-shadow: 2px 2px 4px black;
+      display: none;
+      z-index: 999;
+    }
+	#quickscopeGif {
+      position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 180px;
+  z-index: 999;
+  display: none;
+}
+
+#reminderText {
+    position: absolute;
+    bottom: -40px; /* posuň podle potřeby */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 8px black;
+    z-index: 5;
+}
+#reminder {
+    position: fixed;
+    bottom: 30%;
+    right: 20px;
+    width: 300px;
+    height: 300px;
+    display: none;
+}
+
+#voda {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+	left: -80px;
+    object-fit: cover;
+    z-index: 1;
+}
+
+#stretch {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 2;
+}
+
+
+    /* FACEBOOK → DHL BUTTON */
+    #fbButton {
+      position: fixed;
+      top: 20px;
+      right: 180px;
+      background: transparent;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000;
+      transition: 0.2s;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    #fbButton:hover {
+      transform: scale(1.05);
+      border-color: rgba(255,255,255,0.7);
+	  cursor: url("ruka_hover.png"), pointer;
+    }
+
+    #fbButton img {
+      width: 64px;
+      height: 32px;
+      transition: 0.2s;
+    }
+
+a:hover {
+  cursor: url("ruka_hover.png"), pointer;
+}
+
+   #LegendsButton {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000;
+      transition: 0.2s;
+      z-index: 9999;
+      backdrop-filter: blur(4px);
+    }
+
+    #LegendsButton:hover {
+      transform: scale(1.05);
+      border-color: rgba(255,255,255,0.7);
+	  cursor: url("ruka_hover.png"), pointer;
+    }
+
+    #LegendsButton:hover::after {
+	  content: "Lovísci❤️";
+	  position: absolute;
+	  inset: 0;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  color: white;
+	  background-color:black;
+	  cursor: url("ruka_hover.png"), pointer;
+	  }
+	  
+	#mamacita{
+  position: fixed;
+  right: 23%;
+  bottom: -8%;
+  z-index: 9999;
+  scale:0.5;
+
+    }
+		#steve{
+
+	  position: relative;
+	 
+
+	 
+    }
+	
+	
+	#chaticek{
+	position: fixed;
+	left:0%;
+	 
+    width: 450px;        /* nebo 100% */
+    height: 300px;       /* výška chatu */
+    border: 1px solid #ccc;
+    overflow-y: auto;    /* ⭐ scroll */
+    padding: 10px;
+
+
+	 
+    }
+	
+	
+	#chat-form {
+    margin-top: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+#chat-form input {
+    flex: 1;
+    padding: 5px;
+}
+
+#chat-form button {
+    padding: 2px 10px;
+}
+
+	#zmrd{
+    right:35.5%;
+	top:4%;
+	position:relative;
+}
+
+	#bday-boi{
+    right:5%;
+	top:15%;
+	position:absolute;
+}
+
+.breathing {
+  animation: breathing 3s ease-in-out infinite;
+}
+
+@keyframes breathing {
+  0% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+}

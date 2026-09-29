@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Směnový odpočet</title>
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+  <img id="fireGif" src="fire.gif">
+  <img id="lunchGif" src="lunch.gif">
+  <div id="lunchText">LUNCH TIME!</div>
+  <div id="weather"></div>
+
+  <h1 id="shiftName">Směna</h1>
+  <div id="countdown">--:--:--</div>
+  <div id="date_week"></div>
+  <div id="currentWorkers"></div>
+  <div id="fridayAlert">ITS FRIDAY!</div>
+  <div id="ticketsAlert">TICKETY!</div>
+  <img id="ticketsGif" src="tickety.gif">
+  <audio id="ticketsSound" src="tickety.mp3" preload="auto"></audio>
+  <audio id="směnyzvuk" src="směny.mp3" preload="auto"></audio>
+  <audio id="dovolenkazvuk" src="dovolenka.mp3" preload="auto"></audio>
+
+  <div id="castbarContainer">
+    <div id="castbarFill"></div>
+    <div id="castbarText">Hearthstone</div>
+    <img id="hearthstonegif" src="hearthstone.gif"> 
+  </div>
+
+  <div id="boostAlert">ČAS BOOSTIT!</div>
+  <audio id="boostSound" src="boost.mp3" preload="auto"></audio>
+  <img id="boostGif" src="boost.gif">
+  
+  <div id="reminder">
+  <img id="voda" src="voda.png">
+  <img id="stretch" src="reminder.gif">
+  <div id="reminderText">Protáhni se a napij se</div>
+</div>
+<audio id="drink" src="drink.mp3"></audio>
+
+  <button id="darkmodeButton">Darkmode🌙</button>
+  <button id="panicButton">Je to v prdeli</button>
+  <button id="panicButton2">První pomoc</button>
+  <button id="menuButton">Jídelna</button>
+  <button id="LegendsButton">Galerie</button>
+  <button id="dogButton">🐕</button>
+  <button id="Směnybutton">Směny</button>
+  <button id="Dovolenkabutton">Dovolenka</button>
+  <button id="irc">Power BI</button>
+  <button id="Creditsbutton">May the 4th be with...me?</button>
+  <button id="Contentbutton">Quality content🎬</button>
+  <button id="rollButton">🎲 /roll</button>
+  <img id="quickscopeGif" src="quickscope.gif">
+  <div id="rollResult"></div>
+  <audio id="mlg" src="mlg.mp3" preload="auto"></audio>
+  <button id="fbButton">
+    <img id="fbIcon" src="facebook.png" alt="FB">
+  </button>
+  <div class="checklist">
+  <h3>Checklist (tohle hovno netuším jak udělat aby se sharovalo)(<span id="current-shift-label"></span>)</h3>
+  <ul id="checklist-list"></ul>
+  <button id="reset-checklist">Reset</button>
+</div>
+
+<div id="chaticek">  
+  <h1>Zprávy</h1>
+  <div id="chat-container">
+    <ul id="chatos"></ul>
+</div>
+
+<script type="module">
+
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+
+    const supabaseUrl = "https://fkrnuhlkrkywikrvpvpc.supabase.co/";
+    const supabaseKey = "sb_publishable_LiMFdLRXoMjCgyGpGrs4iA_ch_klhZF";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+
+async function refreshChat() {
+
+
+
+    const { data, error } = await supabase
+        .from("chatos")
+        .select("name, msg")
+        .order("id", { ascending: false });
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    const list = document.getElementById("chatos");
+    const container = document.getElementById("chat-container");
+
+    list.innerHTML = "";
+
+    data.forEach(row => {
+        const li = document.createElement("li");
+        li.textContent = `${row.name}: ${row.msg}`;
+        list.appendChild(li);
+    });
+
+    container.scrollTop = container.scrollHeight;
+}
+
+
+refreshChat();
+
+
+setInterval(refreshChat, 3000);
+
+
+const form = document.getElementById("chat-form");
+
+form.addEventListener("submit", async (e) => {
+    e.preventDefault(); 
+
+    const nameInput = document.getElementById("name");
+    const msgInput = document.getElementById("msg");
+
+    const name = nameInput.value.trim();
+    const msg = msgInput.value.trim();
+
+    if (!name || !msg) return;
+
+    const { error } = await supabase
+        .from("chatos")
+        .insert([{ name, msg }]);
+
+    if (error) {
+        console.error("Chyba při odesílání:", error);
+        return;
+    }
+
+   
+    msgInput.value = "";
+
+   
+    refreshChat();
+});
+``
+
+
+
+
+</script>
+
+
+</div>
+  <div id="zmrd">
+    <form id="chat-form">
+    <input
+        type="text"
+        id="name"
+        placeholder="gdo sy"
+        required
+    />
+
+    <input
+        type="text"
+        id="msg"
+        placeholder="co chceš"
+        required
+    />
+
+    <button type="submit">Odeslat</button>
+</form>
+
+  </div>
+  
+  
+  
+	<marquee><img src="steve.gif" id="steve"></marquee>
+	<audio id="aw" src="keku.mp3" preload="auto"></audio>
+	<img id="mamacita" src ="mamacita.png" >  
+	
+	
+	<div id="bday-boi">
+	
+	</div>
+	
+	
+	
+	
+	
+	
+	<script src="script.js"></script>
+
+</body>
+</html>
