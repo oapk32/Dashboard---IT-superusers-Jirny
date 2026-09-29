@@ -6,7 +6,7 @@ document.getElementById("panicButton").addEventListener("click", () => {
   window.open("https://www.youtube.com/watch?v=8YklJZ-PTto");
 });
 document.getElementById("dogButton").addEventListener("click", () => {
-  window.open("https://www.youtube.com/watch?v=C81oTHgvExc", "_blank");
+  window.open("https://random.dog/");
 });
 
 document.getElementById("panicButton2").addEventListener("click", () => {
