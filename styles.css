@@ -825,8 +825,8 @@
 }
 
 @keyframes fruit-scroll {
-  from { transform: translateY(-360px); }
-  to   { transform: translateY(-720px); }
+  from { transform: translateY(-20%); }
+  to   { transform: translateY(-40%); }
 }
     /* WOW ROLL BUTTON */
     #rollButton {
