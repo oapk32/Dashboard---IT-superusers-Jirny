@@ -191,9 +191,26 @@
       message.textContent = `Hotovo. Změněné tabulky: ${converted.changed}, rozsahy dat: ${dates.changed}.` +
         (source.removed ? ' Obal OPENQUERY odstraněn.' : '');
     }
+function convertInList() {
+  const items = input.value.split(/[,\s]+/).filter(Boolean);
 
+  if (!items.length) {
+    output.value = '';
+    message.textContent = 'Nejdřív vlož hodnoty oddělené řádky nebo čárkami.';
+    return;
+  }
+
+  const unique = [...new Set(items)];
+  output.value = '(' + unique
+    .map(item => "'" + item.replace(/'/g, "''") + "'")
+    .join(', ') + ')';
+
+  message.textContent = `Hotovo. Hodnot: ${unique.length}.` +
+    (unique.length < items.length ? ' Duplicitní hodnoty odstraněny.' : '');
+}
     document.getElementById('convert').addEventListener('click', () => convert('toLext'));
     document.getElementById('reverse').addEventListener('click', () => convert('toSql'));
+    document.getElementById('inList').addEventListener('click', convertInList);
     input.addEventListener('input', () => { output.value = ''; message.textContent = ''; });
     document.getElementById('copy').addEventListener('click', async () => {
       if (!output.value) { message.textContent = 'Nejdřív vyber směr převodu.'; return; }
