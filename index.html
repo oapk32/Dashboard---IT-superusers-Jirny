@@ -54,6 +54,21 @@
   <button id="Creditsbutton">May the 4th be with...me?</button>
   <button id="Contentbutton">Quality content🎬</button>
   <button id="rollButton">🎲 /roll</button>
+  <button id="slotButton" type="button">🍒 Automat</button>
+
+<dialog id="slotDialog" aria-label="Ovocný automat">
+  <button id="slotClose" type="button" aria-label="Zavřít">×</button>
+  <h2>🎰 Ovocný automat</h2>
+
+  <div class="slot-reels" aria-hidden="true">
+    <span class="slot-reel">🍒</span>
+    <span class="slot-reel">🍋</span>
+    <span class="slot-reel">🍉</span>
+  </div>
+
+  <p id="slotStatus" role="status" aria-live="polite">Roztoč válce!</p>
+  <button id="slotSpin" type="button">🎰 TOČIT</button>
+</dialog>
   <img id="quickscopeGif" src="quickscope.gif">
   <div id="rollResult"></div>
   <audio id="mlg" src="mlg.mp3" preload="auto"></audio>
