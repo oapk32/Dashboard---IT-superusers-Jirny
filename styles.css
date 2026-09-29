@@ -782,6 +782,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .slot-reel.spinning { animation: none; }
+}
 
 	/* Pevné okénko automatu, uvnitř se pohybuje pás s ovocem */
 #slotDialog .slot-reels {
