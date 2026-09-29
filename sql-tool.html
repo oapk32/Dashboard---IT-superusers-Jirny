@@ -22,10 +22,9 @@
 <body>
   <main>
     <h1>🛠 SQL ↔ LextEdit</h1>
-    <p>SQL → LextEdit: <code>tabulka@archive_LEGO</code> na <code>ar_tabulka</code> a celý text do hranatých závorek. Případný obal <code>SELECT * FROM OPENQUERY([CZJIR2_REP], '...')</code> se odstraní. Opačný směr závorky odstraní. Text zůstává v tomto okně.</p>
+    <p>SQL → LextEdit:</p>
     <label for="input">Vlož SQL nebo text z LextEditu</label>
     <textarea id="input" spellcheck="false" placeholder="select ... from dlytrn@archive_LEGO"></textarea>
-    <label style="font-weight:400"><input id="fixDates" type="checkbox" checked> Opravit <code>trndte BETWEEN</code> s daty <code>DD.MM.YYYY HH:mm:ss</code> pomocí <code>TO_DATE</code></label>
     <div class="actions">
       <button id="convert" type="button">SQL → LextEdit</button>
       <button id="reverse" type="button">LextEdit → SQL</button>
