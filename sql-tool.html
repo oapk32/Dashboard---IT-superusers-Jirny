@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQL ↔ LextEdit</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 24px; background: #151522; color: #f5f5f7; font: 16px system-ui, sans-serif; }
+    main { max-width: 1000px; margin: auto; }
+    h1 { margin: 0 0 8px; color: #ffd166; }
+    p { color: #b9bacb; margin: 0 0 22px; }
+    label { display: block; margin: 16px 0 7px; font-weight: 700; }
+    textarea { width: 100%; min-height: 220px; padding: 14px; resize: vertical; border: 1px solid #626278; border-radius: 10px; background: #222239; color: #fff; font: 14px/1.5 ui-monospace, Consolas, monospace; }
+    textarea:focus { outline: 2px solid #ffd166; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+    button { padding: 10px 18px; border: 0; border-radius: 8px; background: #ffd166; color: #241c08; font: 700 16px system-ui, sans-serif; cursor: pointer; }
+    button.secondary { background: #3c3c58; color: white; }
+    #message { min-height: 1.5em; color: #b9bacb; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>🛠 SQL ↔ LextEdit</h1>
+    <p>SQL → LextEdit: <code>tabulka@archive_LEGO</code> na <code>ar_tabulka</code> a celý text do hranatých závorek. Případný obal <code>SELECT * FROM OPENQUERY([CZJIR2_REP], '...')</code> se odstraní. Opačný směr závorky odstraní. Text zůstává v tomto okně.</p>
+    <label for="input">Vlož SQL nebo text z LextEditu</label>
+    <textarea id="input" spellcheck="false" placeholder="select ... from dlytrn@archive_LEGO"></textarea>
+    <label style="font-weight:400"><input id="fixDates" type="checkbox" checked> Opravit <code>trndte BETWEEN</code> s daty <code>DD.MM.YYYY HH:mm:ss</code> pomocí <code>TO_DATE</code></label>
+    <div class="actions">
+      <button id="convert" type="button">SQL → LextEdit</button>
+      <button id="reverse" type="button">LextEdit → SQL</button>
+      <button id="copy" type="button" class="secondary">Kopírovat výsledek</button>
+    </div>
+    <label for="output">Výsledek</label>
+    <textarea id="output" spellcheck="false" readonly></textarea>
+    <div id="message" role="status" aria-live="polite"></div>
+  </main>
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const message = document.getElementById('message');
+
+    function transformTables(sql, direction) {
+      let result = '';
+      let state = 'sql';
+      let i = 0;
+      let expectTable = false;
+      let fromDepth = -1;
+      let depth = 0;
+      let changed = 0;
+
+      while (i < sql.length) {
+        const pair = sql.slice(i, i + 2);
+        const char = sql[i];
+
+        if (state === 'sql') {
+          if (pair === '--') { result += pair; i += 2; state = 'line'; continue; }
+          if (pair === '/*') { result += pair; i += 2; state = 'block'; continue; }
+          if (char === "'") { result += char; i++; state = 'single'; continue; }
+          if (char === '"') { result += char; i++; state = 'double'; continue; }
+
+          if (char === '(') {
+            if (expectTable) expectTable = false;
+            depth++;
+          } else if (char === ')') {
+            depth = Math.max(0, depth - 1);
+            if (fromDepth > depth) fromDepth = -1;
+          } else if (char === ',' && fromDepth === depth) {
+            expectTable = true;
+          }
+
+          const previous = sql[i - 1] || '';
+          if (!/[A-Za-z0-9_$#]/.test(previous)) {
+            const match = sql.slice(i).match(/^([A-Za-z_][A-Za-z0-9_$#]*)(@archive_lego(?![A-Za-z0-9_$#]))?/i);
+            if (match) {
+              const name = match[1];
+              const upper = name.toUpperCase();
+
+              if (direction === 'toLext' && match[2]) {
+                result += 'ar_' + name;
+                changed++;
+              } else if (direction === 'toSql' && expectTable && /^ar_[A-Za-z_]/i.test(name)) {
+                result += name.slice(3) + '@archive_LEGO';
+                changed++;
+              } else {
+                result += match[0];
+              }
+
+              if (upper === 'FROM') { expectTable = true; fromDepth = depth; }
+              else if (['JOIN', 'UPDATE', 'INTO'].includes(upper)) { expectTable = true; }
+              else if (['WHERE', 'GROUP', 'ORDER', 'HAVING', 'SET', 'VALUES', 'UNION', 'MINUS', 'CONNECT', 'START'].includes(upper)) {
+                expectTable = false;
+                if (fromDepth === depth) fromDepth = -1;
+              } else if (upper === 'ON') { expectTable = false; }
+              else if (expectTable && sql[i + match[0].length] !== '.') { expectTable = false; }
+
+              i += match[0].length;
+              continue;
+            }
+          }
+        } else if (state === 'single' || state === 'double') {
+          const quote = state === 'single' ? "'" : '"';
+          if (char === quote && sql[i + 1] === quote) { result += quote + quote; i += 2; continue; }
+          if (char === quote) state = 'sql';
+        } else if (state === 'line' && char === '\n') {
+          state = 'sql';
+        } else if (state === 'block' && pair === '*/') {
+          result += pair; i += 2; state = 'sql'; continue;
+        }
+
+        result += char;
+        i++;
+      }
+      return { text: result, changed };
+    }
+
+    function isSqlAt(sql, position) {
+      let state = 'sql';
+      for (let i = 0; i < position; i++) {
+        const pair = sql.slice(i, i + 2);
+        const char = sql[i];
+        if (state === 'sql') {
+          if (pair === '--') { state = 'line'; i++; }
+          else if (pair === '/*') { state = 'block'; i++; }
+          else if (char === "'") state = 'single';
+          else if (char === '"') state = 'double';
+        } else if (state === 'single' || state === 'double') {
+          const quote = state === 'single' ? "'" : '"';
+          if (char === quote && sql[i + 1] === quote) i++;
+          else if (char === quote) state = 'sql';
+        } else if (state === 'line' && char === '\n') state = 'sql';
+        else if (state === 'block' && pair === '*/') { state = 'sql'; i++; }
+      }
+      return state === 'sql';
+    }
+
+    function fixTrndteDates(sql) {
+      let changed = 0;
+      const date = "(\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}:\\d{2})";
+      const pattern = new RegExp(
+        "\\b(trndte\\s+between)\\s*\\(?\\s*'" + date +
+        "'\\s*\\)?\\s+(and)\\s*\\(?\\s*'" + date + "'\\s*\\)?", 'gi'
+      );
+      const text = sql.replace(pattern, (match, start, first, andWord, second, position) => {
+        if (!isSqlAt(sql, position)) return match;
+        changed++;
+        return `${start} TO_DATE('${first}', 'DD.MM.YYYY HH24:MI:SS') ` +
+          `${andWord} TO_DATE('${second}', 'DD.MM.YYYY HH24:MI:SS')`;
+      });
+      return { text, changed };
+    }
+
+    function unwrapOpenQuery(sql) {
+      const prefix = /^SELECT\s+\*\s+FROM\s+OPENQUERY\s*\(\s*\[CZJIR2_REP\]\s*,\s*'/i.exec(sql);
+      if (!prefix) return { text: sql, removed: false };
+
+      let inside = '';
+      let i = prefix[0].length;
+      while (i < sql.length) {
+        if (sql[i] === "'") {
+          if (sql[i + 1] === "'") { inside += "'"; i += 2; continue; }
+          if (!/^\s*\)\s*;?\s*$/.test(sql.slice(i + 1)) || !inside.trim()) break;
+          return { text: inside.trim(), removed: true };
+        }
+        inside += sql[i++];
+      }
+      return { error: true };
+    }
+
+    function convert(direction) {
+      const text = input.value.trim();
+      if (!text) { output.value = ''; message.textContent = 'Nejdřív vlož SQL.'; return; }
+      const source = direction === 'toLext' ? unwrapOpenQuery(text) : { text, removed: false };
+      if (source.error) {
+        output.value = '';
+        message.textContent = 'Obal OPENQUERY není úplný. Vlož celý dotaz včetně uzavíracího apostrofu a závorky.';
+        return;
+      }
+      const wrapped = source.text.match(/^\[([\s\S]*)\]\s*(;?)$/);
+      const unwrapped = wrapped ? wrapped[1].trim() : source.text;
+      const body = direction === 'toLext'
+        ? unwrapped.replace(/;\s*$/, '')
+        : unwrapped;
+      const converted = transformTables(body, direction);
+      const dates = direction === 'toLext' && document.getElementById('fixDates').checked
+        ? fixTrndteDates(converted.text)
+        : { text: converted.text, changed: 0 };
+      output.value = direction === 'toLext'
+        ? '[' + dates.text + '];'
+        : converted.text + (wrapped?.[2] || '');
+      message.textContent = `Hotovo. Změněné tabulky: ${converted.changed}, rozsahy dat: ${dates.changed}.` +
+        (source.removed ? ' Obal OPENQUERY odstraněn.' : '');
+    }
+
+    document.getElementById('convert').addEventListener('click', () => convert('toLext'));
+    document.getElementById('reverse').addEventListener('click', () => convert('toSql'));
+    input.addEventListener('input', () => { output.value = ''; message.textContent = ''; });
+    document.getElementById('copy').addEventListener('click', async () => {
+      if (!output.value) { message.textContent = 'Nejdřív vyber směr převodu.'; return; }
+      try {
+        await navigator.clipboard.writeText(output.value);
+        message.textContent = 'Výsledek zkopírován.';
+      } catch {
+        output.focus(); output.select();
+        message.textContent = 'Označil jsem výsledek. Zkopíruj ho pomocí Ctrl+C.';
+      }
+    });
+  </script>
+</body>
+</html>
