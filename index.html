@@ -17,6 +17,65 @@
   <h1 id="shiftName">Směna</h1>
   <div id="countdown">--:--:--</div>
   <div id="date_week"></div>
+	<div id="namedayWidget" style="margin:14px auto 0;padding:10px 18px;max-width:calc(100vw - 36px);border:2px solid #ffffff66;border-radius:12px;background:#000a;text-align:center;box-shadow:0 0 14px #000;z-index:5;">
+  <div style="font:700 .85rem system-ui,sans-serif;color:#bcd2e5;">📅 DNES MÁ SVÁTEK</div>
+  <div id="namedayName" style="font:700 1.3rem system-ui,sans-serif;color:#fff;">Načítám…</div>
+</div>
+
+<script>
+(() => {
+  const box = document.getElementById('namedayWidget');
+  const output = document.getElementById('namedayName');
+  const vybranaJmena = new Set([
+    'ondrej', 'milos', 'petr', 'miroslav', 'zdenek', 'marek', 'david'
+  ]);
+  let posledniDen = '';
+
+  function prazskeDatum() {
+    const casti = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Prague',
+      year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(new Date());
+    const d = Object.fromEntries(casti.map(c => [c.type, c.value]));
+    return `${d.year}-${d.month}-${d.day}`;
+  }
+
+  function zobraz(jmeno) {
+    const bezDiakritiky = jmeno.normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLocaleLowerCase('cs-CZ');
+    const vybrane = bezDiakritiky.split(/[^a-z]+/)
+      .some(cast => vybranaJmena.has(cast));
+
+    output.textContent = jmeno;
+    output.style.fontSize = vybrane ? '2.1rem' : '1.3rem';
+    output.style.fontWeight = vybrane ? '900' : '700';
+    output.style.color = vybrane ? '#ffdb54' : '#fff';
+    output.style.textShadow = vybrane ? '0 0 16px #ff8a00' : 'none';
+    box.style.borderColor = vybrane ? '#ffdb54' : '#ffffff66';
+  }
+
+  async function nactiSvatek() {
+    const den = prazskeDatum();
+    if (den === posledniDen) return;
+    posledniDen = den;
+
+    try {
+      const odpoved = await fetch(`https://svatkyapi.netlify.app/api/day/${den}`);
+      if (!odpoved.ok) throw new Error('API');
+      const data = await odpoved.json();
+      if (!data.name) throw new Error('Chybí jméno');
+      zobraz(data.name);
+    } catch {
+      output.textContent = 'Svátek se nepodařilo načíst';
+      posledniDen = ''; // zkusí to znovu při další kontrole
+    }
+  }
+
+  nactiSvatek();
+  setInterval(nactiSvatek, 60 * 1000);
+})();
+</script>
   <div id="currentWorkers"></div>
   <div id="fridayAlert">ITS FRIDAY!</div>
   <div id="ticketsAlert">TICKETY!</div>
