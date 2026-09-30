@@ -322,8 +322,8 @@
 .checklist {
   background: rgba(0,0,0,0.4);
   position: fixed;
-  top: 10%;
-  left: 1%;
+  top: 20%;
+  left: 3%;
   padding: 12px 16px;
   border-radius: 8px;
   color: #fff;
@@ -999,9 +999,10 @@ a:hover {
 	
 	#chaticek{
 	position: fixed;
-	left:0%;
+	left:3%;
+	bottom:30%
 	 
-    width: 450px;        /* nebo 100% */
+    width: 300px;        /* nebo 100% */
     height: 300px;       /* výška chatu */
     border: 1px solid #ccc;
     overflow-y: auto;    /* ⭐ scroll */
