@@ -68,7 +68,7 @@ document.getElementById("Creditsbutton").addEventListener("click", () => {
       bottom: -100%;
       width: 100%;
       text-align: center;
-      transform-origin: 50% 100%;
+      transform-origin: 50% %;
       animation: crawl 50s linear infinite;
     }
 
@@ -262,8 +262,8 @@ rainbowBackground();
 let quickscopePlayed = false;
 
 document.getElementById("rollButton").addEventListener("click", () => {
-    //const rollResult = Math.floor(Math.random() * 100) + 1;
-    const rollResult = 100;
+    const rollResult = Math.floor(Math.random() * 100) + 1;
+    //const rollResult = 100;
 	
     const resultDiv = document.getElementById("rollResult");
     const diceButton = document.getElementById("rollButton");
