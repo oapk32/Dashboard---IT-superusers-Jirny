@@ -223,5 +223,71 @@ function convertInList() {
       }
     });
   </script>
+  <style>
+  #qrPanel { margin: 20px 0; padding: 20px; border: 1px solid #626278; border-radius: 10px; background: #222239; text-align: center; }
+  #qrPanel h2 { margin-top: 0; color: #ffd166; }
+  #qrCode { display: flex; justify-content: center; width: max-content; max-width: 100%; margin: 16px auto; padding: 12px; background: white; }
+  #qrCode img, #qrCode canvas { max-width: 100%; height: auto; }
+  #qrDownload { display: inline-block; padding: 10px 18px; border-radius: 8px; background: #ffd166; color: #241c08; font-weight: 700; text-decoration: none; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+  (() => {
+    const qrInput = document.getElementById('input');
+    const qrMessage = document.getElementById('message');
+    const qrButton = document.createElement('button');
+    qrButton.type = 'button';
+    qrButton.textContent = 'Text → QR';
+    document.getElementById('copy').before(qrButton);
+
+    const qrPanel = document.createElement('section');
+    qrPanel.id = 'qrPanel';
+    qrPanel.hidden = true;
+    qrPanel.setAttribute('aria-labelledby', 'qrTitle');
+    qrPanel.innerHTML = '<h2 id="qrTitle">QR kód</h2><div id="qrCode"></div><a id="qrDownload" download="text-qr.png">Stáhnout PNG</a>';
+    qrMessage.after(qrPanel);
+    const qrCode = document.getElementById('qrCode');
+    const qrDownload = document.getElementById('qrDownload');
+
+    qrButton.addEventListener('click', () => {
+      qrPanel.hidden = true;
+      qrCode.replaceChildren();
+      qrDownload.removeAttribute('href');
+
+      if (!qrInput.value.trim()) {
+        qrMessage.textContent = 'Nejdřív vlož text do horního pole.';
+        return;
+      }
+      if (typeof QRCode === 'undefined') {
+        qrMessage.textContent = 'Knihovna QR se nenačetla. Zkontroluj připojení k internetu a obnov stránku.';
+        return;
+      }
+
+      try {
+        new QRCode(qrCode, {
+          text: qrInput.value,
+          width: 256,
+          height: 256,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+        const canvas = qrCode.querySelector('canvas');
+        if (!canvas) throw new Error('QR canvas není dostupný');
+        qrDownload.href = canvas.toDataURL('image/png');
+        qrPanel.hidden = false;
+        qrMessage.textContent = 'QR kód je hotový.';
+      } catch {
+        qrCode.replaceChildren();
+        qrMessage.textContent = 'QR kód se nepodařilo vytvořit. Zkus kratší text.';
+      }
+    });
+
+    qrInput.addEventListener('input', () => {
+      qrPanel.hidden = true;
+      qrDownload.removeAttribute('href');
+    });
+  })();
+</script>
 </body>
 </html>
