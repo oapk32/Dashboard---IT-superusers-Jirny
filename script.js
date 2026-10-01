@@ -382,10 +382,10 @@ function updateTickets(now) {
   const sound = document.getElementById("ticketsSound");
 
   const start = new Date(now);
-  start.setHours(8, 5, 0, 0);
+  start.setHours(9, 5, 0, 0);
 
   const end = new Date(now);
-  end.setHours(8, 10, 0, 0);
+  end.setHours(9, 10, 0, 0);
 
   if (now >= start && now <= end) {
     alert.style.display = "block";
