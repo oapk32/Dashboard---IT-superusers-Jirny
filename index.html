@@ -220,10 +220,6 @@ form.addEventListener("submit", async (e) => {
    
     refreshChat();
 });
-``
-
-
-
 
 </script>
 
@@ -267,6 +263,43 @@ form.addEventListener("submit", async (e) => {
 	
 	
 	<script src="script.js"></script>
+<script>
+(() => {
+  const toolbar = document.createElement("nav");
+  toolbar.id = "dashboardToolbar";
+  toolbar.setAttribute("aria-label", "Tlačítka dashboardu");
 
+  const buttonIds = [
+    "menuButton",
+    "fbButton",
+    "Směnybutton",
+    "Dovolenkabutton",
+    "irc",
+    "LegendsButton",
+    "Creditsbutton",
+    "Contentbutton",
+    "rollButton",
+    "slotButton"
+  ];
+
+  for (const id of buttonIds) {
+    const button = document.getElementById(id);
+    if (button) toolbar.appendChild(button);
+  }
+
+  const links = [
+    document.querySelector('a[href$="sql-tool.html"]'),
+    document.querySelector('a[href*="UAT_Excel_Generator"]')
+  ];
+
+  for (const link of links) {
+    if (!link) continue;
+    link.removeAttribute("style");
+    toolbar.appendChild(link);
+  }
+
+  document.body.appendChild(toolbar);
+})();
+</script>
 </body>
 </html>
