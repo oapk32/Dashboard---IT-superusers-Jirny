@@ -1141,3 +1141,15 @@ a:hover {
     font-size: 12px;
   }
 }
+/* Tři sloupce na počítači */
+@media (min-width: 621px) {
+  #dashboardToolbar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: min(650px, calc(100vw - 32px));
+  }
+}
+
+/* Všechna písmena i výsledek rollu bíle */
+#dashboardToolbar > :is(button, a, #rollResult) {
+  color: #fff;
+}
