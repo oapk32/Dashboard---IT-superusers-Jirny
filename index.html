@@ -301,13 +301,74 @@ form.addEventListener("submit", async (e) => {
   document.body.appendChild(toolbar);
 })();
 </script>
-	  document.body.appendChild(toolbar);
+
+<style>
+  #trafficDialog {
+    box-sizing: border-box;
+    width: min(900px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    padding: 18px;
+    border: 2px solid #ffd100;
+    border-radius: 14px;
+    background: #151522;
+    color: white;
+    box-shadow: 0 20px 70px #000;
+  }
+
+  #trafficDialog::backdrop {
+    background: #000b;
+  }
+
+  #trafficDialog h2 {
+    margin: 0 40px 14px 0;
+  }
+
+  #trafficDialog iframe {
+    display: block;
+    width: 100%;
+    height: min(70dvh, 600px);
+    border: 0;
+    border-radius: 8px;
+  }
+
+  #trafficClose {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    border: 0;
+    background: transparent;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+(() => {
+  const toolbar = document.getElementById("dashboardToolbar");
+
+  const button = document.createElement("button");
+  button.id = "trafficButton";
+  button.type = "button";
+  button.textContent = "🚗 Doprava";
+  toolbar.appendChild(button);
+
+  const dialog = document.createElement("dialog");
+  dialog.id = "trafficDialog";
+  dialog.innerHTML = `
+    <button id="trafficClose" type="button" aria-label="Zavřít mapu">×</button>
+    <h2>🚗 Doprava v okolí Jiren</h2>
+    <iframe
+      title="Mapa provozu Waze – Jirny"
+      src="https://embed.waze.com/cs/iframe?zoom=12&lat=50.1117&lon=14.7009">
+    </iframe>
+  `;
+  document.body.appendChild(dialog);
+
+  button.addEventListener("click", () => dialog.showModal());
+  dialog.querySelector("#trafficClose")
+    .addEventListener("click", () => dialog.close());
 })();
 </script>
-
-<!-- SEM PATŘÍ NOVÝ BLOK S MAPOU -->
-
-</body>
-</html>
 </body>
 </html>
