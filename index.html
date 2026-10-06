@@ -314,15 +314,23 @@ form.addEventListener("submit", async (e) => {
     color: white;
     box-shadow: 0 20px 70px #000;
   }
-  #trafficDialog::backdrop { background: #000b; }
-  #trafficDialog h2 { margin: 0 40px 14px 0; }
-  #trafficMap {
+
+  #trafficDialog::backdrop {
+    background: #000b;
+  }
+
+  #trafficDialog h2 {
+    margin: 0 40px 14px 0;
+  }
+
+  #trafficDialog iframe {
+    display: block;
     width: 100%;
     height: min(70dvh, 600px);
+    border: 0;
     border-radius: 8px;
-    background: #252536;
   }
-  #trafficStatus { margin: 0 0 10px; }
+
   #trafficClose {
     position: absolute;
     top: 8px;
@@ -337,7 +345,6 @@ form.addEventListener("submit", async (e) => {
 
 <script>
 (() => {
-  const GOOGLE_MAPS_KEY = "VLOZ_SEM_GOOGLE_MAPS_API_KLIC";
   const toolbar = document.getElementById("dashboardToolbar");
 
   const button = document.createElement("button");
@@ -351,64 +358,14 @@ form.addEventListener("submit", async (e) => {
   dialog.innerHTML = `
     <button id="trafficClose" type="button" aria-label="Zavřít mapu">×</button>
     <h2>🚗 Doprava v okolí Jiren</h2>
-    <p id="trafficStatus" role="status">Mapa se načte po otevření.</p>
-    <div id="trafficMap" aria-label="Mapa dopravy v okolí Jiren"></div>
+    <iframe
+      title="Mapa provozu Waze – Jirny"
+      src="https://embed.waze.com/cs/iframe?zoom=12&lat=50.1117&lon=14.7009">
+    </iframe>
   `;
   document.body.appendChild(dialog);
 
-  const status = dialog.querySelector("#trafficStatus");
-  let loading = false;
-  let ready = false;
-
-  window.initTrafficGoogleMap = async () => {
-    try {
-      const { Map, TrafficLayer } = await google.maps.importLibrary("maps");
-      const map = new Map(dialog.querySelector("#trafficMap"), {
-        center: { lat: 50.1117, lng: 14.7009 },
-        zoom: 12,
-        mapTypeControl: false,
-        streetViewControl: false
-      });
-      new TrafficLayer().setMap(map);
-      status.hidden = true;
-      ready = true;
-    } catch (error) {
-      loading = false;
-      status.textContent = "Mapu se nepodařilo načíst. Zkontroluj API klíč.";
-      console.error(error);
-    }
-  };
-
-  window.gm_authFailure = () => {
-    loading = false;
-    status.hidden = false;
-    status.textContent = "Google Maps odmítly API klíč. Zkontroluj omezení webu a fakturaci.";
-  };
-
-  button.addEventListener("click", () => {
-    dialog.showModal();
-    if (ready || loading) return;
-
-    if (GOOGLE_MAPS_KEY === "VLOZ_SEM_GOOGLE_MAPS_API_KLIC") {
-      status.textContent = "Nejdřív vlož svůj Google Maps API klíč do index.html.";
-      return;
-    }
-
-    loading = true;
-    status.textContent = "Načítám dopravní mapu…";
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://maps.googleapis.com/maps/api/js?key=" +
-      encodeURIComponent(GOOGLE_MAPS_KEY) +
-      "&loading=async&callback=initTrafficGoogleMap&language=cs&region=CZ";
-    script.onerror = () => {
-      loading = false;
-      status.textContent = "Mapu se nepodařilo načíst. Zkontroluj připojení.";
-      script.remove();
-    };
-    document.head.appendChild(script);
-  });
-
+  button.addEventListener("click", () => dialog.showModal());
   dialog.querySelector("#trafficClose")
     .addEventListener("click", () => dialog.close());
 })();
