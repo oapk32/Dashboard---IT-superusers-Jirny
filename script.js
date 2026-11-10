@@ -405,67 +405,6 @@ function updateTickets(now) {
     ticketsSoundPlayed = false;
   }
 }
-
-// Nastav si svoje úkoly
-const CHECKLIST_ITEMS = [
-  "DHL Link",
-  "CZJIRP2",
-  "CZJIRP3",
-  "ZABBIX",
- "Monster Energy"
-];
-
-const STORAGE_KEY_STATE = "shiftChecklistState";
-const STORAGE_KEY_SHIFT = "shiftChecklistLastShift";
-
-function getCurrentShift() {
-  const now = new Date();
-  const h = now.getHours();
-
-  if (h >= 6 && h < 14) return "ranni";
-  if (h >= 14 && h < 22) return "odpoledni";
-  return "nocni";
-}
-
-function getCurrentShiftLabel(shift) {
-  switch (shift) {
-    case "ranni": return "Ranní";
-    case "odpoledni": return "Odpolední";
-    case "nocni": return "Noční";
-    default: return shift;
-  }
-}
-
-function loadChecklistState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_STATE);
-    if (!raw) return {};
-    return JSON.parse(raw);
-  } catch {
-    return {};
-  }
-}
-
-function saveChecklistState(state) {
-  localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(state));
-}
-
-function loadLastShift() {
-  return localStorage.getItem(STORAGE_KEY_SHIFT);
-}
-
-function saveLastShift(shift) {
-  localStorage.setItem(STORAGE_KEY_SHIFT, shift);
-}
-
-function resetChecklistForNewShift(currentShift) {
-  const lastShift = loadLastShift();
-  if (!lastShift || lastShift !== currentShift) {
-    // jiná směna → reset
-    saveChecklistState({});
-    saveLastShift(currentShift);
-  }
-}
 function playAlert() {
     const wrapper = document.getElementById("reminder");
     const sound = document.getElementById("drink");
