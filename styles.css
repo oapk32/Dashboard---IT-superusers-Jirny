@@ -319,7 +319,7 @@
 	  cursor: url("ruka_hover.png"), pointer;
 }
 
-.checklist {
+/*.checklist {
   background: rgba(0,0,0,0.4);
   position: fixed;
   top: 20%;
@@ -352,7 +352,7 @@
 .checklist input[type="checkbox"] {
   width: 18px;
   height: 18px;
-}
+}*/
 
 
  #darkmodeButton {
