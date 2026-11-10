@@ -593,12 +593,12 @@ function loadWeather() {
         1: "🌤️ Ideální počasí - na práci",
         2: "⛅ Polojasno = pracuj",
         3: "☁️ Zataženo takže o moc nepřijdeš",
-        45: "🌫️ Není vidět ani kokot",
+        45: "🌫️ Není vidět nic",
         48: "🌫️ Nevidíš a mrzneš",
-        51: "🌦️ Menší chcanec",
-        61: "🌧️ Velkej chcanec",
+        51: "🌦️ Menší déšť",
+        61: "🌧️ Velkej déšť",
         71: "❄️ Sníh",
-        95: "⛈️ V piči"
+        95: "⛈️ V prdeli"
       };
 
       document.getElementById("weather").innerHTML = `
