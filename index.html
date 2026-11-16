@@ -14,6 +14,68 @@
   <div id="lunchText">LUNCH TIME!</div>
   <div id="weather"></div>
 
+  <!-- ===== DVANÁCTKY START (po 14.12. smazat celý blok) ===== -->
+  <div id="countdown12">--:--:--</div>
+  <div id="ecommHell">Ecomm hell: <span id="ecommHellTime">--</span></div>
+  <style>
+    #countdown12 {
+      font-size: 5rem;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      color: red;
+      text-shadow: 0 0 8px #000;
+    }
+    #ecommHell {
+      position: fixed;
+      left: 20px;
+      bottom: 70px;
+      z-index: 9999;
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: red;
+      text-shadow: 0 0 8px #000;
+    }
+  </style>
+  <script>
+  (() => {
+    const KONEC = new Date(2026, 11, 14, 6, 0, 0); // 14.12.2026 6:00
+    const el12 = document.getElementById("countdown12");
+    const elHell = document.getElementById("ecommHell");
+    const elHellTime = document.getElementById("ecommHellTime");
+    const pad = n => String(n).padStart(2, "0");
+    const hms = ms => {
+      const s = Math.floor(ms / 1000);
+      return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
+    };
+
+    function tick() {
+      const now = new Date();
+      if (now >= KONEC) {
+        el12.style.display = "none";
+        elHell.style.display = "none";
+        return;
+      }
+
+      // 12h směny: střídání v 6:00 a 18:00
+      const end = new Date(now);
+      const h = now.getHours();
+      if (h >= 6 && h < 18) end.setHours(18, 0, 0, 0);
+      else if (h >= 18) { end.setDate(end.getDate() + 1); end.setHours(6, 0, 0, 0); }
+      else end.setHours(6, 0, 0, 0);
+      el12.textContent = hms(end - now);
+
+      // Ecomm hell do 14.12. 6:00
+      const diff = KONEC - now;
+      const dny = Math.floor(diff / 86400000);
+      elHellTime.textContent = `${dny}d ${hms(diff % 86400000)}`;
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  })();
+  </script>
+  <!-- ===== DVANÁCTKY END ===== -->
+
   <h1 id="shiftName">Směna</h1>
   <div id="countdown">--:--:--</div>
   <div id="date_week"></div>
