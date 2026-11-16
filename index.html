@@ -5,6 +5,95 @@
   <title>Směnový odpočet</title>
   <link rel="stylesheet" href="styles.css">
 
+  <!-- ===== HESLO ===== -->
+  <style>
+    html.locked body > :not(#pwGate) { display: none !important; }
+    #pwGate {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000e;
+    }
+    #pwGate form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 28px 32px;
+      border: 2px solid #ffffff66;
+      border-radius: 12px;
+      background: #151522;
+      box-shadow: 0 0 30px #000;
+      text-align: center;
+      color: #fff;
+      font: 700 1.2rem system-ui, sans-serif;
+    }
+    #pwGate input {
+      padding: 10px 14px;
+      border: 2px solid #ffffff66;
+      border-radius: 8px;
+      background: #000a;
+      color: #fff;
+      font: 1.2rem system-ui, sans-serif;
+      text-align: center;
+    }
+    #pwGate button {
+      padding: 10px 18px;
+      border: 2px solid #ffffff66;
+      border-radius: 8px;
+      background: #0009;
+      color: #ffd100;
+      font: 700 1.1rem system-ui, sans-serif;
+      cursor: pointer;
+    }
+    #pwError { min-height: 1.2em; color: red; font-size: 1rem; }
+  </style>
+  <script>
+  (() => {
+    const HASH = "fdba72deec5b7272a7ab516d72b4e009317df2172aa23c0a118bf7897d1f8082";
+    const KEY = "dashboardHeslo";
+    try { if (localStorage.getItem(KEY) === HASH) return; } catch {}
+
+    document.documentElement.classList.add("locked");
+
+    async function sha256(text) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const gate = document.createElement("div");
+      gate.id = "pwGate";
+      gate.innerHTML = `
+        <form>
+          <div>🔒 Zadej heslo</div>
+          <input type="password" autocomplete="current-password" autofocus>
+          <button type="submit">Vstoupit</button>
+          <div id="pwError"></div>
+        </form>`;
+      document.body.appendChild(gate);
+
+      const input = gate.querySelector("input");
+      input.focus();
+      gate.querySelector("form").addEventListener("submit", async e => {
+        e.preventDefault();
+        if (await sha256(input.value) === HASH) {
+          try { localStorage.setItem(KEY, HASH); } catch {}
+          gate.remove();
+          document.documentElement.classList.remove("locked");
+        } else {
+          gate.querySelector("#pwError").textContent = "Špatné heslo";
+          input.value = "";
+          input.focus();
+        }
+      });
+    });
+  })();
+  </script>
+  <!-- ===== HESLO END ===== -->
+
 </head>
 
 <body>
