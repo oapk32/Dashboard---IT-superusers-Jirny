@@ -18,8 +18,18 @@
   <div id="countdown12">--:--:--</div>
   <div id="ecommHell">Ecomm hell: <span id="ecommHellTime">--</span></div>
   <style>
+    #countdown12Wrap {
+      position: relative;
+    }
     #countdown12 {
-      font-size: 5rem;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) rotate(22deg);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 5;
+      font-size: 6.5rem;
       font-weight: bold;
       letter-spacing: 0.1em;
       color: red;
@@ -72,6 +82,25 @@
 
     tick();
     setInterval(tick, 1000);
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Červený odpočet šikmo přes 8h časovač
+      const cd = document.getElementById("countdown");
+      const wrap = document.createElement("div");
+      wrap.id = "countdown12Wrap";
+      cd.parentNode.insertBefore(wrap, cd);
+      wrap.append(cd, el12);
+
+      // Shiftleader: Studená -> Umachanov (jen po dobu dvanáctek)
+      const workers = document.getElementById("currentWorkers");
+      const prejmenuj = () => {
+        if (new Date() < KONEC && workers.innerHTML.includes("Studená")) {
+          workers.innerHTML = workers.innerHTML.replaceAll("Studená", "Umachanov");
+        }
+      };
+      new MutationObserver(prejmenuj).observe(workers, { childList: true, subtree: true, characterData: true });
+      prejmenuj();
+    });
   })();
   </script>
   <!-- ===== DVANÁCTKY END ===== -->
